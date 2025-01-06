@@ -5,16 +5,10 @@ import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
-import com.artifex.mupdf.fitz.Document;
-import com.artifex.mupdf.fitz.Link;
-import com.artifex.mupdf.fitz.Location;
-import com.artifex.mupdf.fitz.Page;
-import com.artifex.mupdf.fitz.android.AndroidDrawDevice;
-
-import org.vudroid.core.entity.Hyperlink;
-import org.vudroid.core.entity.ReflowBean;
 import org.vudroid.core.cache.BitmapPool;
 import org.vudroid.core.codec.CodecPage;
+import org.vudroid.core.entity.Hyperlink;
+import org.vudroid.core.entity.ReflowBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,47 +16,45 @@ import java.util.List;
 public class PdfPage implements CodecPage {
 
     private long pageHandle = -1;
-    Page page;
+    io.legere.pdfiumandroid.PdfPage page;
     int pdfPageWidth;
     int pdfPageHeight;
-    private Document doc;
+    private io.legere.pdfiumandroid.PdfDocument doc;
 
-    public PdfPage(Document core, long pageHandle) {
+    public PdfPage(io.legere.pdfiumandroid.PdfDocument core, long pageHandle) {
         this.pageHandle = pageHandle;
         this.doc = core;
     }
 
     public int getWidth() {
-        //return (int) getMediaBox().width();
         if (pdfPageWidth == 0) {
-            pdfPageWidth = (int) (page.getBounds().x1 - page.getBounds().x0);
+            pdfPageWidth = page.getPageWidthPoint();
         }
         return pdfPageWidth;
     }
 
     public int getHeight() {
-        //return (int) getMediaBox().height();
         if (pdfPageHeight == 0) {
-            pdfPageHeight = (int) (page.getBounds().y1 - page.getBounds().y0);
+            pdfPageHeight = page.getPageHeightPoint();
         }
         return pdfPageHeight;
     }
 
     public void loadPage(int pageno) {
-        page = doc.loadPage(pageno);
+        page = doc.openPage(pageno);
     }
 
-    public void setPage(Page page) {
+    public void setPage(io.legere.pdfiumandroid.PdfPage page) {
         this.page = page;
     }
 
-    public Page getPage() {
+    public io.legere.pdfiumandroid.PdfPage getPage() {
         return page;
     }
 
-    public static PdfPage createPage(Document core, int pageno) {
+    public static PdfPage createPage(io.legere.pdfiumandroid.PdfDocument core, int pageno) {
         PdfPage pdfPage = new PdfPage(core, pageno);
-        pdfPage.page = core.loadPage(pageno);
+        pdfPage.page = core.openPage(pageno);
         return pdfPage;
     }
 
@@ -95,26 +87,27 @@ public class PdfPage implements CodecPage {
         Bitmap bitmap = BitmapPool.getInstance().acquire(width, height);
 
         //Log.d("TAG", String.format("page:%s, scale:%s, patchX:%s, patchY:%s, width:%s, height:%s, %s", pageHandle, scale, patchX, patchY, width, height, cropBound));
+        float zoom = 1f; // 2f
+        float pan = 0f; // -width.toFloat() / 2
+        RectF tempSrc = new RectF(0f, 0f, width, height);
+        RectF tempDst = new RectF(0f, 0f, width, height);
+        Matrix result = new Matrix();
+        result.setRectToRect(tempSrc, tempDst, Matrix.ScaleToFit.START);
+        result.postScale(zoom, zoom);
+        result.postTranslate(pan, 0f);
 
-        com.artifex.mupdf.fitz.Matrix ctm = new com.artifex.mupdf.fitz.Matrix(scale);
-        AndroidDrawDevice dev = new AndroidDrawDevice(bitmap, patchX, patchY, 0, 0, width, height);
-
-        if (pageHandle == -1) {
-            return bitmap;
-        }
-        try {
-            page.run(dev, ctm, null);
-        } catch (Exception e) {
-        }
-        dev.close();
-        dev.destroy();
-
+        page.renderPageBitmap(
+                bitmap,
+                result,
+                new RectF(0f, 0f, width, zoom * height),
+                false, false
+        );
         return bitmap;
     }
 
     public List<Hyperlink> getPageLinks() {
         List<Hyperlink> hyperlinks = new ArrayList<>();
-        Link[] links = page.getLinks();
+        /*Link[] links = page.getLinks();
         if (null != links) {
             for (Link link : links) {
                 Hyperlink hyper = new Hyperlink();
@@ -131,7 +124,7 @@ public class PdfPage implements CodecPage {
                 }
                 hyperlinks.add(hyper);
             }
-        }
+        }*/
 
         return hyperlinks;
     }
@@ -150,7 +143,7 @@ public class PdfPage implements CodecPage {
         if (pageHandle >= 0) {
             pageHandle = -1;
             if (page != null) {
-                page.destroy();
+                page.close();
             }
         }
     }

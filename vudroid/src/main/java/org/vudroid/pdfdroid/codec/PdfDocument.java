@@ -1,28 +1,30 @@
 package org.vudroid.pdfdroid.codec;
 
-import com.artifex.mupdf.fitz.Document;
-import com.artifex.mupdf.fitz.Outline;
-import com.artifex.mupdf.fitz.Quad;
+import android.graphics.Outline;
+import android.os.ParcelFileDescriptor;
 
-import org.vudroid.core.entity.ReflowBean;
 import org.vudroid.core.codec.CodecDocument;
 import org.vudroid.core.codec.CodecPage;
 import org.vudroid.core.codec.OutlineLink;
 import org.vudroid.core.codec.PageTextBox;
 import org.vudroid.core.codec.SearchResult;
+import org.vudroid.core.entity.ReflowBean;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.legere.pdfiumandroid.PdfiumCore;
+
 public class PdfDocument implements CodecDocument {
 
-    private Document document;
+    private io.legere.pdfiumandroid.PdfDocument document;
 
-    public void setDocument(Document document) {
+    public void setDocument(io.legere.pdfiumandroid.PdfDocument document) {
         this.document = document;
     }
 
-    public Document getDocument() {
+    public io.legere.pdfiumandroid.PdfDocument getDocument() {
         return document;
     }
 
@@ -31,20 +33,16 @@ public class PdfDocument implements CodecDocument {
     }
 
     public int getPageCount() {
-        return document.countPages();
+        return document.getPageCount();
     }
 
     public static PdfDocument openDocument(String fname, String pwd) {
         PdfDocument pdfDocument = new PdfDocument();
-        Document core = null;
+        io.legere.pdfiumandroid.PdfDocument core = null;
         System.out.println("Trying to open " + fname);
         try {
-            core = Document.openDocument(fname);
-            //if (IntentFile.INSTANCE.isReflowable(fname)) {
-            //    int w = Utils.getScreenWidthPixelWithOrientation(App.Companion.getInstance());
-            //    int h = Utils.getScreenHeightPixelWithOrientation(App.Companion.getInstance());
-            //    core.layout(w, h, 32);
-            //}
+            PdfiumCore pdfiumCore = new PdfiumCore();
+            core = pdfiumCore.newDocument(ParcelFileDescriptor.open(new File(fname), ParcelFileDescriptor.MODE_READ_ONLY));
             pdfDocument.setDocument(core);
         } catch (Exception e) {
             e.printStackTrace();
@@ -61,17 +59,17 @@ public class PdfDocument implements CodecDocument {
 
     public synchronized void recycle() {
         if (null != document) {
-            document.destroy();
+            document.close();
         }
     }
 
     @Override
     public List<OutlineLink> loadOutline() {
-        Outline[] outlines = document.loadOutline();
+        //Outline[] outlines = document.loadOutline();
         List<OutlineLink> links = new ArrayList<>();
-        if (outlines != null) {
-            downOutline(document, outlines, links);
-        }
+        //if (outlines != null) {
+            //downOutline(document, outlines, links);
+        //}
         return links;
     }
 
@@ -85,7 +83,7 @@ public class PdfDocument implements CodecDocument {
     @Override
     public List<SearchResult> search(String text, int pageNum) {
         List<SearchResult> searchResults = new ArrayList<>();
-        int count = document.countPages();
+        /*int count = document.countPages();
         for (int i = 0; i < count; i++) {
             CodecPage page = getPage(i);
             Object[] results = ((PdfPage) page).page.search(text);
@@ -116,14 +114,14 @@ public class PdfDocument implements CodecDocument {
 
             SearchResult searchResult = new SearchResult(i, boxes, sb.toString());
             searchResults.add(searchResult);
-        }
+        }*/
 
         return searchResults;
     }
 
-    public static void downOutline(Document core, Outline[] outlines, List<OutlineLink> links) {
+    public static void downOutline(io.legere.pdfiumandroid.PdfDocument core, Outline[] outlines, List<OutlineLink> links) {
         if (null != outlines) {
-            for (Outline outline : outlines) {
+            /*for (Outline outline : outlines) {
                 int page = core.pageNumberFromLocation(core.resolveLink(outline));
                 OutlineLink link = new OutlineLink(outline.title, page, 0);
                 if (outline.down != null) {
@@ -131,7 +129,7 @@ public class PdfDocument implements CodecDocument {
                     downOutline(core, child, links);
                 }
                 links.add(link);
-            }
+            }*/
         }
     }
 }

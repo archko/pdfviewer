@@ -5,9 +5,6 @@ import android.content.Intent
 import android.graphics.Rect
 import android.net.Uri
 import android.text.TextUtils
-import com.artifex.mupdf.fitz.Document
-import com.artifex.mupdf.fitz.Link
-import com.artifex.mupdf.fitz.Location
 import org.vudroid.core.Page
 
 /**
@@ -47,7 +44,7 @@ class Hyperlink {
         }
 
         //controller
-        fun mapPointToPage(
+        /*fun mapPointToPage(
             doc: Document?,
             pdfPage: com.artifex.mupdf.fitz.Page,
             atX: Float,
@@ -79,7 +76,7 @@ class Hyperlink {
                 }
             }
             return null
-        }
+        }*/
 
         fun openSystemBrowser(context: Context?, url: String?) {
             if (context != null && !TextUtils.isEmpty(url)) {

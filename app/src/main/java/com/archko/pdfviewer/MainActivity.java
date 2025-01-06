@@ -18,8 +18,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.artifex.mupdf.fitz.Outline;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,8 +31,6 @@ public class MainActivity extends AppCompatActivity {
     ViewGroup rootView;
     private int margin = 0;
     private Toast toast = null;
-    private OutlineDialog outlineDialog;
-    private Outline[] outlines;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,18 +111,6 @@ public class MainActivity extends AppCompatActivity {
         final Intent intent = new Intent(this, PdfViewerActivity.class);
         intent.putExtra("path", path);
         startActivity(intent);
-    }
-
-    private void showOutlineDialog() {
-        if (null == outlines) {
-            //outlines = pdfViewerRecyclerView.getDocument().loadOutline();
-        }
-
-        if (null == outlineDialog) {
-            outlineDialog = new OutlineDialog(MainActivity.this);
-        }
-        outlineDialog.setCurrPage(0);
-        outlineDialog.show();
     }
 
     private void tap(MotionEvent e) {
