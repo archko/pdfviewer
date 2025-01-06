@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/document_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:id="@+id/top_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/menu_bg"
+        android:orientation="vertical"
+        android:paddingTop="10dp"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:orientation="horizontal"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp">
+
+            <ImageButton
+                android:id="@+id/back_button"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:background="@drawable/button"
+                android:contentDescription="back"
+                android:scaleType="center"
+                android:src="@drawable/ic_back" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <HorizontalScrollView
+                android:layout_width="wrap_content"
+                android:layout_height="42dp"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/ttsButton"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:background="@drawable/button"
+                        android:contentDescription="tts"
+                        android:src="@drawable/ic_tts"
+                        android:visibility="visible"
+                        tools:visibility="visible" />
+
+                    <ImageButton
+                        android:id="@+id/autoCropButton"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:background="@drawable/button"
+                        android:src="@drawable/ic_crop"
+                        android:visibility="visible"
+                        tools:visibility="visible" />
+
+                    <ImageButton
+                        android:id="@+id/reflowButton"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:background="@drawable/button"
+                        android:src="@drawable/ic_reflow"
+                        android:visibility="visible"
+                        tools:visibility="visible" />
+
+                    <ImageButton
+                        android:id="@+id/outlineButton"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:background="@drawable/button"
+                        android:src="@drawable/ic_toc" />
+
+                    <ImageButton
+                        android:id="@+id/oriButton"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:background="@drawable/button"
+                        android:src="@drawable/ic_vertical" />
+
+                    <ImageButton
+                        android:id="@+id/searchButton"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:background="@drawable/button"
+                        android:contentDescription=""
+                        android:src="@drawable/ic_search" />
+                </LinearLayout>
+            </HorizontalScrollView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_path"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/path"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:singleLine="true"
+                android:text=""
+                android:textColor="@android:color/white"
+                android:textSize="13sp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:singleLine="true"
+                android:text=""
+                android:textColor="@android:color/white"
+                android:textSize="15sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/bottom_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/menu_bg"
+        android:orientation="vertical"
+        android:visibility="gone"
+        tools:visibility="gone">
+
+        <TextView
+            android:id="@+id/page_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="4dp"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            tools:text="133/999" />
+
+        <SeekBar
+            android:id="@+id/seek_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:paddingBottom="8dp"
+            android:progressDrawable="@drawable/seek_line"
+            android:thumb="@drawable/seek_thumb" />
+
+    </LinearLayout>
+
+</RelativeLayout>
