@@ -82,8 +82,8 @@ public class MainActivity extends AppCompatActivity {
             if (TextUtils.isEmpty(path)) {
                 Uri uri = getIntent().getData();
                 path = IntentFile.getFilePathByUri(this, uri);
+                loadPdf(path);
             }
-            loadPdf(path);
         }
     }
 

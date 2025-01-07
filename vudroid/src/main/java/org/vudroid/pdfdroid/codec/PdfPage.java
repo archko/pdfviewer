@@ -70,40 +70,23 @@ public class PdfPage implements CodecPage {
      * @return 位图
      */
     public Bitmap renderBitmap(Rect cropBound, int width, int height, RectF pageSliceBounds, float scale) {
-        //Matrix matrix=new Matrix();
-        //matrix.postScale(width/getWidth(), -height/getHeight());
+        Matrix matrix = new Matrix();
+        //matrix.postScale(1f * width / getWidth(), 1f * -height / getHeight());
         //matrix.postTranslate(0, height);
-        //matrix.postTranslate(-pageSliceBounds.left*width, -pageSliceBounds.top*height);
-        //matrix.postScale(1/pageSliceBounds.width(), 1/pageSliceBounds.height());
+        matrix.postTranslate(-pageSliceBounds.left * width, -pageSliceBounds.top * height);
+        matrix.postScale(1 / pageSliceBounds.width(), 1 / pageSliceBounds.height());
 
-        int pageW;
-        int pageH;
-        int patchX;
-        int patchY;
-        //如果页面的缩放为1,那么这时的pageW就是view的宽.
-        pageW = (int) (cropBound.width() * scale);
-        pageH = (int) (cropBound.height() * scale);
-
-        patchX = (int) ((int) (pageSliceBounds.left * pageW) + cropBound.left * scale);
-        patchY = (int) ((int) (pageSliceBounds.top * pageH) + cropBound.top * scale);
         Bitmap bitmap = BitmapPool.getInstance().acquire(width, height);
 
-        //Log.d("TAG", String.format("page:%s, scale:%s, patchX:%s, patchY:%s, width:%s, height:%s, %s", pageHandle, scale, patchX, patchY, width, height, cropBound));
-        float zoom = 1f; // 2f
-        float pan = 0f; // -width.toFloat() / 2
-        RectF tempSrc = new RectF(0f, 0f, width, height);
-        RectF tempDst = new RectF(0f, 0f, width, height);
-        Matrix result = new Matrix();
-        result.setRectToRect(tempSrc, tempDst, Matrix.ScaleToFit.START);
-        result.postScale(zoom, zoom);
-        result.postTranslate(pan, 0f);
+        RectF renderBounds = new RectF(0f, 0f, width, height);
+        matrix.mapRect(renderBounds);
+        Rect bounds = new Rect();
+        renderBounds.round(bounds);
 
-        page.renderPageBitmap(
-                bitmap,
-                result,
-                new RectF(0f, 0f, width, zoom * height),
-                false, false
-        );
+        page.renderPageBitmap(bitmap,
+                bounds.left, bounds.top, bounds.width(), bounds.height(),
+                false, false);
+
         return bitmap;
     }
 
@@ -116,7 +99,7 @@ public class PdfPage implements CodecPage {
                 hyper.setPage((int) pageHandle);
                 hyper.setBbox(new Rect((int) link.getBounds().left, (int) link.getBounds().top, (int) link.getBounds().right, (int) link.getBounds().bottom));
 
-                if (link.getDestPageIdx() >= 0) {
+                if (link.getDestPageIdx() != null && link.getDestPageIdx() >= 0) {
                     hyper.setLinkType(Hyperlink.LINKTYPE_PAGE);
                 } else {
                     hyper.setUrl(link.getUri());

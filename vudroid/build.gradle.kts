@@ -28,5 +28,5 @@ android {
 dependencies {
     //api("com.artifex.mupdf:mupdf-fitz:1.25.0")
     api(libs.androidx.core.ktx)
-    implementation("io.legere:pdfiumandroid:1.0.19")
+    api("io.legere:pdfiumandroid:1.0.24")
 }
