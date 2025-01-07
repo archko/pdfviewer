@@ -1,12 +1,10 @@
 package org.vudroid.pdfdroid.codec;
 
-import android.graphics.Outline;
 import android.os.ParcelFileDescriptor;
 
 import org.vudroid.core.codec.CodecDocument;
 import org.vudroid.core.codec.CodecPage;
 import org.vudroid.core.codec.OutlineLink;
-import org.vudroid.core.codec.PageTextBox;
 import org.vudroid.core.codec.SearchResult;
 import org.vudroid.core.entity.ReflowBean;
 
@@ -14,6 +12,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.legere.pdfiumandroid.PdfDocument.Bookmark;
 import io.legere.pdfiumandroid.PdfiumCore;
 
 public class PdfDocument implements CodecDocument {
@@ -57,7 +56,7 @@ public class PdfDocument implements CodecDocument {
         super.finalize();
     }
 
-    public synchronized void recycle() {
+    public void recycle() {
         if (null != document) {
             document.close();
         }
@@ -65,11 +64,11 @@ public class PdfDocument implements CodecDocument {
 
     @Override
     public List<OutlineLink> loadOutline() {
-        //Outline[] outlines = document.loadOutline();
+        List<Bookmark> bookmarks = document.getTableOfContents();
         List<OutlineLink> links = new ArrayList<>();
-        //if (outlines != null) {
-            //downOutline(document, outlines, links);
-        //}
+        if (bookmarks != null) {
+            downOutline(bookmarks, links, 0);
+        }
         return links;
     }
 
@@ -119,17 +118,16 @@ public class PdfDocument implements CodecDocument {
         return searchResults;
     }
 
-    public static void downOutline(io.legere.pdfiumandroid.PdfDocument core, Outline[] outlines, List<OutlineLink> links) {
+    public static void downOutline(List<Bookmark> outlines, List<OutlineLink> links, int level) {
         if (null != outlines) {
-            /*for (Outline outline : outlines) {
-                int page = core.pageNumberFromLocation(core.resolveLink(outline));
-                OutlineLink link = new OutlineLink(outline.title, page, 0);
-                if (outline.down != null) {
-                    Outline[] child = outline.down;
-                    downOutline(core, child, links);
+            for (Bookmark outline : outlines) {
+                OutlineLink link = new OutlineLink(outline.getTitle(), (int) outline.getPageIdx(), level);
+                if (outline.getChildren() != null) {
+                    List<Bookmark> child = outline.getChildren();
+                    downOutline(child, links, level + 1);
                 }
                 links.add(link);
-            }*/
+            }
         }
     }
 }
